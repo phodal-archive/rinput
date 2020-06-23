@@ -12,4 +12,7 @@ pub use input::Input;
 mod input;
 mod keyboard;
 mod editor;
+mod buffer;
+mod command;
+
 
