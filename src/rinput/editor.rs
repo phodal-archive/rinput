@@ -1,9 +1,7 @@
 use rustbox::{RustBox, Event};
 
-// use input::Input;
-// use keyboard::Key;
-use crate::Key;
-use crate::Input;
+use crate::input::Input;
+use crate::keyboard::Key;
 
 pub struct Editor {
     rb: RustBox,
@@ -15,4 +13,6 @@ impl Editor {
             rb,
         }
     }
+
+    pub fn start(&mut self) {}
 }
