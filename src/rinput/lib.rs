@@ -2,7 +2,6 @@
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 #![crate_name = "rinput"]
 #![crate_type = "rlib"]
-// #![feature(fn_traits)]
 #![warn(missing_docs)]
 
 extern crate rustbox;
