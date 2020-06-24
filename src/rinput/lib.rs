@@ -14,5 +14,4 @@ mod keyboard;
 mod editor;
 mod buffer;
 mod command;
-
-
+mod view;

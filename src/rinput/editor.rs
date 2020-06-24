@@ -9,8 +9,11 @@ use crate::input::Input;
 use crate::keyboard::Key;
 use crate::buffer::Buffer;
 use crate::command::Command;
+use crate::view::View;
 
 pub struct Editor {
+    buffers: Vec<Arc<Mutex<Buffer>>>,
+    view: View,
     rb: RustBox,
 
     command_queue: Receiver<Command>,
@@ -39,8 +42,12 @@ impl Editor {
         };
         buffers.push(Arc::new(Mutex::new(buffer)));
 
+        let view = View::new(buffers[0].clone(), width, height);
+
         Editor {
             rb,
+            buffers: buffers,
+            view: view,
 
             command_queue: recv,
             command_sender: snd,
