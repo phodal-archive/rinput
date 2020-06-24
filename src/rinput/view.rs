@@ -15,19 +15,31 @@ pub struct View {
     /// First character of the top line to be displayed
     top_line: Mark,
 
+    /// The current View's cursor - a reference into the Buffer
+    cursor: Mark,
+
     /// Index into the top_line - used for horizontal scrolling
     left_col: usize,
 }
 
 impl View {
     pub fn new(buffer: Arc<Mutex<Buffer>>, width: usize, height: usize) -> View {
+        let cursor = Mark::Cursor(0);
         let top_line = Mark::DisplayMark(0);
+
+        {
+            let mut b = buffer.lock().unwrap();
+
+            b.set_mark(cursor, 0);
+            b.set_mark(top_line, 0);
+        }
 
         View {
             buffer,
             last_buffer: None,
             height,
             width,
+            cursor,
             top_line: top_line,
             left_col: 0,
         }

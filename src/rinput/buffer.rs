@@ -1,3 +1,4 @@
+use std::cmp;
 use std::path::PathBuf;
 use std::fs::File;
 use std::io::{Stdin, Read};
@@ -52,6 +53,19 @@ impl Buffer {
         self.text.len() + 1
     }
 
+    /// Sets the mark to a given absolute index. Adds a new mark or overwrites an existing mark.
+    pub fn set_mark(&mut self, mark: Mark, idx: usize) {
+        if let Some(mark_pos) = get_line_info(idx, &self.text) {
+            if let Some(existing_pos) = self.marks.get_mut(&mark) {
+                existing_pos.absolute = mark_pos.absolute;
+                existing_pos.line_number = mark_pos.line_number;
+                existing_pos.absolute_line_start = mark_pos.absolute_line_start;
+                return;
+            }
+            self.marks.insert(mark, mark_pos);
+        }
+    }
+
     /// Creates an iterator on the text by lines that begins at the specified mark.
     pub fn lines_from(&self, mark: Mark) -> Option<Lines> {
         if let Some(mark_pos) = self.marks.get(&mark) {
@@ -68,6 +82,21 @@ impl Buffer {
     }
 }
 
+fn get_line_info(mark: usize, text: &GapBuffer<u8>) -> Option<MarkPosition> {
+    let val = cmp::min(mark, text.len());
+    let line_starts: Vec<usize> = (0..val + 1).rev().filter(|idx| *idx == 0 || text[*idx - 1] == b'\n').collect();
+
+
+    if line_starts.is_empty() {
+        None
+    } else {
+        let mut mark_pos = MarkPosition::start();
+        mark_pos.absolute_line_start = line_starts[0];
+        mark_pos.line_number = line_starts.len() - 1;
+        mark_pos.absolute = mark;
+        Some(mark_pos)
+    }
+}
 
 // This is a bit of a hack to get around an error I was getting when
 // implementing From<R: Read> for Buffer with From<PathBuf> for Buffer.
