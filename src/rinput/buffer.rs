@@ -7,7 +7,6 @@ use std::collections::HashMap;
 use gapbuffer::GapBuffer;
 
 use crate::input::Input;
-use crate::mark::Mark;
 use crate::iterators::Lines;
 
 
@@ -151,3 +150,11 @@ impl From<Input> for Buffer {
     }
 }
 
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+pub enum Mark {
+    /// For keeping track of cursors.
+    Cursor(usize),
+
+    /// For using in determining some display of characters
+    DisplayMark(usize),
+}

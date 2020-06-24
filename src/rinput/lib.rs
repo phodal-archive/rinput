@@ -8,6 +8,9 @@ extern crate rustbox;
 
 pub use editor::Editor;
 pub use input::Input;
+#[macro_use] extern crate lazy_static;
+
+pub use modes::{StandardMode};
 
 mod input;
 mod keyboard;
@@ -15,5 +18,8 @@ mod editor;
 mod buffer;
 mod command;
 mod view;
-mod mark;
 mod iterators;
+mod modes;
+mod keymap;
+mod overlay;
+mod textobject;

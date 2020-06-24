@@ -4,11 +4,13 @@ use rustbox::{Color, RustBox, Style as RustBoxStyle};
 use unicode_width::UnicodeWidthChar;
 
 use crate::buffer::{Buffer};
-use crate::mark::{Mark};
+use crate::buffer::Mark;
+use crate::overlay::Overlay;
 
 pub struct View {
     pub buffer: Arc<Mutex<Buffer>>,
     pub last_buffer: Option<Arc<Mutex<Buffer>>>,
+    pub overlay: Option<Box<Overlay>>,
 
     height: usize,
     width: usize,
@@ -37,6 +39,7 @@ impl View {
         View {
             buffer,
             last_buffer: None,
+            overlay: None,
             height,
             width,
             cursor,
@@ -71,6 +74,17 @@ impl View {
             for y_position in 0..height {
                 let line = lines.next().unwrap_or_else(Vec::new);
                 draw_line(rb, &line, y_position, self.left_col);
+            }
+        }
+    }
+
+    /// Clear the buffer
+    ///
+    /// Fills every cell in the UIBuffer with the space (' ') char.
+    pub fn clear(&mut self, rb: &mut RustBox) {
+        for row in 0..self.height {
+            for col in 0..self.width {
+                rb.print_char(col, row, RustBoxStyle::empty(), Color::White, Color::Black, ' ');
             }
         }
     }
