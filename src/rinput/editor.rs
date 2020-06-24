@@ -10,7 +10,7 @@ use rustbox::{RustBox, Event};
 use crate::input::Input;
 use crate::keyboard::Key;
 use crate::buffer::Buffer;
-use crate::command::{Command, BuilderArgs, BuilderEvent, Action};
+use crate::command::{Command, BuilderArgs, BuilderEvent, Action, Instruction};
 use crate::view::View;
 use crate::modes::{Mode, StandardMode};
 
@@ -151,7 +151,13 @@ impl Editor {
     }
 
     fn handle_instruction(&mut self, command: Command) {
+        match command.action {
+            Action::Instruction(Instruction::ExitEditor) => {
+                self.running = false;
+            }
 
+            _ => {}
+        }
     }
 
     fn handle_operation(&mut self, command: Command) {
