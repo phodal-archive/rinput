@@ -10,7 +10,7 @@ use rustbox::{RustBox, Event};
 use crate::input::Input;
 use crate::keyboard::Key;
 use crate::buffer::Buffer;
-use crate::command::{Command, BuilderArgs, BuilderEvent, Action, Instruction};
+use crate::command::{Command, BuilderArgs, BuilderEvent, Action, Instruction, Operation};
 use crate::view::View;
 use crate::modes::{Mode, StandardMode};
 
@@ -161,7 +161,16 @@ impl Editor {
     }
 
     fn handle_operation(&mut self, command: Command) {
+        match command.action {
+            Action::Operation(Operation::Insert(c)) => {
+                for _ in 0..command.number {
+                    self.view.insert_char(c)
+                }
+            }
 
+            Action::Instruction(_) => {}
+            _ => {}
+        }
     }
 
     pub fn start(&mut self) {

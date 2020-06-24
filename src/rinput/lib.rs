@@ -23,3 +23,5 @@ mod modes;
 mod keymap;
 mod overlay;
 mod textobject;
+mod log;
+mod utils;
