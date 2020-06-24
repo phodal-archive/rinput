@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::sync::mpsc::{Sender, Receiver};
 use std::sync::{Mutex, Arc};
 use std::sync::mpsc::channel;
+use std::str;
 
 use rustbox::{RustBox, Event};
 
@@ -41,14 +42,16 @@ impl Editor {
                 Buffer::from(reader)
             }
         };
+
         buffers.push(Arc::new(Mutex::new(buffer)));
 
+        println!("............");
         let view = View::new(buffers[0].clone(), width, height);
 
         Editor {
             rb,
-            buffers: buffers,
-            view: view,
+            buffers,
+            view,
             running: true,
 
             command_queue: recv,

@@ -60,7 +60,6 @@ impl View {
                 let line = lines.next().unwrap_or_else(Vec::new);
                 draw_line(rb, &line, y_position, self.left_col);
             }
-
         }
     }
 }
