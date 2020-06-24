@@ -492,6 +492,58 @@ impl Buffer {
             self.dirty = true;
         }
     }
+
+    /// The absolute index of a mark within the file. None if not a valid mark.
+    pub fn get_mark_idx(&self, mark: Mark) -> Option<usize> {
+        if let Some(mark_pos) = self.marks.get(&mark) {
+            if mark_pos.absolute < self.len() {
+                Some(mark_pos.absolute)
+            } else { None }
+        } else { None }
+    }
+
+    // Remove the chars between mark and object
+    pub fn remove_from_mark_to_object(&mut self, mark: Mark, object: TextObject) -> Option<Vec<u8>> {
+        let (start, end) = {
+            let mark_pos = &self.marks[&mark];
+            let obj_pos = self.get_object_index(object).unwrap();
+
+            if mark_pos.absolute < obj_pos.absolute {
+                (mark_pos.absolute, obj_pos.absolute)
+            } else {
+                (obj_pos.absolute, mark_pos.absolute)
+            }
+        };
+        self.remove_range(start, end)
+    }
+
+    pub fn remove_object(&mut self, object: TextObject) -> Option<Vec<u8>> {
+        let object_start = TextObject { kind: object.kind.with_anchor(Anchor::Start), offset: object.offset };
+        let object_end = TextObject { kind: object.kind.with_anchor(Anchor::End), offset: object.offset };
+
+        let start = self.get_object_index(object_start);
+        let end = self.get_object_index(object_end);
+
+        if let (Some(start_pos), Some(end_pos)) = (start, end) {
+            return self.remove_range(start_pos.absolute, end_pos.absolute);
+        }
+        None
+    }
+
+    // Remove the chars in the range from start to end
+    pub fn remove_range(&mut self, start: usize, end: usize) -> Option<Vec<u8>> {
+        self.dirty = true;
+        let text = &mut self.text;
+        let mut transaction = self.log.start(start);
+        let mut vec = (start..end)
+            .rev()
+            .filter_map(|idx| text.remove(idx).map(|ch| (idx, ch)))
+            .inspect(|&(idx, ch)| transaction.log(Change::Remove(idx, ch), idx))
+            .map(|(_, ch)| ch)
+            .collect::<Vec<u8>>();
+        vec.reverse();
+        Some(vec)
+    }
 }
 
 fn get_line_info(mark: usize, text: &GapBuffer<u8>) -> Option<MarkPosition> {

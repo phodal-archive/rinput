@@ -110,10 +110,24 @@ impl View {
         }
     }
 
-
     pub fn move_mark(&mut self, mark: Mark, object: TextObject) {
         self.buffer.lock().unwrap().set_mark_to_object(mark, object);
         self.maybe_move_screen();
+    }
+
+    // Delete chars from the first index of object to the last index of object
+    pub fn delete_object(&mut self, object: TextObject) {
+        self.buffer.lock().unwrap().remove_object(object);
+    }
+
+    pub fn delete_from_mark_to_object(&mut self, mark: Mark, object: TextObject) {
+        let mut buffer = self.buffer.lock().unwrap();
+        if let Some(mark_pos) = buffer.get_object_index(object) {
+            if let Some(midx) = buffer.get_mark_idx(mark) {
+                buffer.remove_from_mark_to_object(mark, object);
+                buffer.set_mark(mark, cmp::min(mark_pos.absolute, midx));
+            }
+        }
     }
 
     /// Update the top_line mark if necessary to keep the cursor on the screen.

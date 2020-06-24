@@ -167,6 +167,16 @@ impl Editor {
                     self.view.insert_char(c)
                 }
             }
+            Action::Operation(Operation::DeleteObject) => {
+                if let Some(obj) = command.object {
+                    self.view.delete_object(obj);
+                }
+            }
+            Action::Operation(Operation::DeleteFromMark(m)) => {
+                if command.object.is_some() {
+                    self.view.delete_from_mark_to_object(m, command.object.unwrap())
+                }
+            }
 
             Action::Instruction(_) => {}
             _ => {}
