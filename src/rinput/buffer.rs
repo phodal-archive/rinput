@@ -1,14 +1,38 @@
 use std::path::PathBuf;
 use std::fs::File;
 use std::io::{Stdin, Read};
+use std::collections::HashMap;
 
 use gapbuffer::GapBuffer;
 
 use crate::input::Input;
+use crate::mark::Mark;
+use crate::iterators::Lines;
+
+
+#[derive(PartialEq, Debug)]
+pub struct MarkPosition {
+    pub absolute: usize,
+    absolute_line_start: usize,
+    line_number: usize,
+}
+
+impl MarkPosition {
+    fn start() -> MarkPosition {
+        MarkPosition {
+            absolute: 0,
+            line_number: 0,
+            absolute_line_start: 0,
+        }
+    }
+}
 
 pub struct Buffer {
     /// Current buffers text
     text: GapBuffer<u8>,
+
+    /// Table of marked indices in the text
+    marks: HashMap<Mark, MarkPosition>,
 
     pub file_path: Option<PathBuf>,
 }
@@ -18,8 +42,29 @@ impl Buffer {
     pub fn new() -> Buffer {
         Buffer {
             text: GapBuffer::new(),
+            marks: HashMap::new(),
             file_path: None,
         }
+    }
+
+    /// Length of the text stored in this buffer.
+    pub fn len(&self) -> usize {
+        self.text.len() + 1
+    }
+
+    /// Creates an iterator on the text by lines that begins at the specified mark.
+    pub fn lines_from(&self, mark: Mark) -> Option<Lines> {
+        if let Some(mark_pos) = self.marks.get(&mark) {
+            if mark_pos.absolute < self.len() {
+                return Some(Lines {
+                    buffer: &self.text,
+                    tail: mark_pos.absolute,
+                    head: self.len(),
+                })
+            }
+        }
+
+        None
     }
 }
 

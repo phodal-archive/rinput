@@ -15,6 +15,7 @@ pub struct Editor {
     buffers: Vec<Arc<Mutex<Buffer>>>,
     view: View,
     rb: RustBox,
+    running: bool,
 
     command_queue: Receiver<Command>,
     command_sender: Sender<Command>,
@@ -48,11 +49,22 @@ impl Editor {
             rb,
             buffers: buffers,
             view: view,
+            running: true,
 
             command_queue: recv,
             command_sender: snd,
         }
     }
 
-    pub fn start(&mut self) {}
+    /// Draw the current view to the frontend
+    fn draw(&mut self) {
+        self.view.draw(&mut self.rb);
+    }
+
+    pub fn start(&mut self) {
+        while self.running {
+            self.draw();
+            self.rb.present();
+        }
+    }
 }

@@ -15,3 +15,5 @@ mod editor;
 mod buffer;
 mod command;
 mod view;
+mod mark;
+mod iterators;
