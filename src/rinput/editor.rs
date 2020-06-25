@@ -12,7 +12,7 @@ use crate::keyboard::Key;
 use crate::buffer::Buffer;
 use crate::command::{Command, BuilderArgs, BuilderEvent, Action, Instruction, Operation};
 use crate::view::View;
-use crate::modes::{Mode, StandardMode};
+use crate::modes::{Mode, StandardMode, ModeType, InsertMode, NormalMode};
 
 
 type EditorCommand = fn(Option<BuilderArgs>) -> Command;
@@ -163,7 +163,13 @@ impl Editor {
             Action::Instruction(Instruction::SetOverlay(overlay_type)) => {
                 self.view.set_overlay(overlay_type)
             }
-    
+            Action::Instruction(Instruction::SetMode(mode)) => {
+                match mode {
+                    ModeType::Insert => { self.mode = Box::new(InsertMode::new()) }
+                    ModeType::Normal => { self.mode = Box::new(NormalMode::new()) }
+                }
+            }
+
             _ => {}
         }
     }

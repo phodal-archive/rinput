@@ -2,8 +2,12 @@ use crate::keyboard::Key;
 use crate::command::BuilderEvent;
 
 pub use self::standard::StandardMode;
+pub use self::normal::NormalMode;
+pub use self::insert::InsertMode;
 
 mod standard;
+mod normal;
+mod insert;
 
 #[derive(Copy, Clone, Debug)]
 pub enum ModeType {

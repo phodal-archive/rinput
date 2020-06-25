@@ -5,11 +5,11 @@
 #![warn(missing_docs)]
 
 extern crate rustbox;
+#[macro_use]
+extern crate lazy_static;
 
 pub use editor::Editor;
 pub use input::Input;
-#[macro_use] extern crate lazy_static;
-
 pub use modes::{StandardMode};
 
 mod input;
