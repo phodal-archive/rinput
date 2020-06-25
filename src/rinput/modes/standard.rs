@@ -112,6 +112,22 @@ impl StandardMode {
                     .with_offset(Offset::Backward(0, Mark::Cursor(0)))),
             },
         );
+        keymap.bind_key(
+            Key::AltLeft,
+            CommandInfo {
+                command_name: String::from("buffer::move_cursor"),
+                args: Some(BuilderArgs::new().with_kind(Kind::Line(Anchor::End))
+                    .with_offset(Offset::Backward(0, Mark::Cursor(0)))),
+            },
+        );
+        keymap.bind_key(
+            Key::AltRight,
+            CommandInfo {
+                command_name: String::from("buffer::move_cursor"),
+                args: Some(BuilderArgs::new().with_kind(Kind::Line(Anchor::End))
+                    .with_offset(Offset::Forward(0, Mark::Cursor(0)))),
+            },
+        );
 
         // Editing
         keymap.bind_key(
