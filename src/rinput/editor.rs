@@ -155,7 +155,15 @@ impl Editor {
             Action::Instruction(Instruction::ExitEditor) => {
                 self.running = false;
             }
-
+            Action::Instruction(Instruction::SetMark(mark)) => {
+                if let Some(object) = command.object {
+                    self.view.move_mark(mark, object)
+                }
+            }
+            Action::Instruction(Instruction::SetOverlay(overlay_type)) => {
+                self.view.set_overlay(overlay_type)
+            }
+    
             _ => {}
         }
     }

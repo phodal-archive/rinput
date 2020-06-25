@@ -5,7 +5,7 @@ use unicode_width::UnicodeWidthChar;
 
 use crate::buffer::{Buffer};
 use crate::buffer::Mark;
-use crate::overlay::Overlay;
+use crate::overlay::{Overlay, OverlayType, CommandPrompt};
 use crate::textobject::{TextObject, Kind, Offset, Anchor};
 use std::cmp;
 use crate::utils;
@@ -113,6 +113,14 @@ impl View {
     pub fn move_mark(&mut self, mark: Mark, object: TextObject) {
         self.buffer.lock().unwrap().set_mark_to_object(mark, object);
         self.maybe_move_screen();
+    }
+
+    pub fn set_overlay(&mut self, overlay_type: OverlayType) {
+        match overlay_type {
+            OverlayType::CommandPrompt => {
+                self.overlay = Some(Box::new(CommandPrompt::new()));
+            }
+        }
     }
 
     // Delete chars from the first index of object to the last index of object
