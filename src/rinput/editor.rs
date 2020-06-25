@@ -152,6 +152,7 @@ impl Editor {
 
     fn handle_instruction(&mut self, command: Command) {
         match command.action {
+            Action::Instruction(Instruction::SaveBuffer) => { self.view.try_save_buffer() }
             Action::Instruction(Instruction::ExitEditor) => {
                 self.running = false;
             }

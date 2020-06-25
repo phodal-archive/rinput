@@ -96,6 +96,15 @@ impl Buffer {
         }
     }
 
+    /// Creates an iterator on the text by lines.
+    pub fn lines(&self) -> Lines {
+        Lines {
+            buffer: &self.text,
+            tail: 0,
+            head: self.len()
+        }
+    }
+
     /// Creates an iterator on the text by lines that begins at the specified mark.
     pub fn lines_from(&self, mark: Mark) -> Option<Lines> {
         if let Some(mark_pos) = self.marks.get(&mark) {

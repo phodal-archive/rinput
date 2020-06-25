@@ -1,13 +1,20 @@
-use std::sync::{Mutex, Arc};
-use rustbox::{Color, RustBox, Style as RustBoxStyle};
-
-use unicode_width::UnicodeWidthChar;
-
-use crate::buffer::{Buffer};
-use crate::buffer::Mark;
-use crate::overlay::{Overlay, OverlayType, CommandPrompt};
-use crate::textobject::{TextObject, Kind, Offset, Anchor};
+use std::borrow::Cow;
 use std::cmp;
+use std::fs::{File, rename};
+use std::io::Write;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
+use std::time::SystemTime;
+
+use rustbox::{Color, RustBox, Style as RustBoxStyle};
+use unicode_width::UnicodeWidthChar;
+use tempdir::TempDir;
+
+use crate::buffer::Buffer;
+use crate::buffer::Mark;
+use crate::overlay::{CommandPrompt, Overlay, OverlayType};
+use crate::textobject::{Anchor, Kind, Offset, TextObject};
 use crate::utils;
 
 pub struct View {
@@ -28,7 +35,11 @@ pub struct View {
 
     /// Number of lines from the top/bottom of the View after which vertical
     /// scrolling begins.
-    threshold: usize
+    threshold: usize,
+
+    /// Message to be displayed in the status bar along with the time it
+    /// was displayed.
+    message: Option<(String, SystemTime)>,
 }
 
 impl View {
@@ -53,6 +64,7 @@ impl View {
             top_line: top_line,
             left_col: 0,
             threshold: 5,
+            message: None,
         }
     }
 
@@ -157,6 +169,70 @@ impl View {
             }
         }
     }
+
+    pub fn try_save_buffer(&mut self) {
+        let mut should_save = false;
+        {
+            let buffer = self.buffer.lock().unwrap();
+
+            match buffer.file_path {
+                Some(_) => { should_save = true; }
+                None => {
+                    self.message = Some(("No file name".into(), SystemTime::now()));
+                }
+            }
+        }
+
+        if should_save {
+            self.save_buffer();
+            let mut buffer = self.buffer.lock().unwrap();
+            buffer.dirty = false;
+        }
+    }
+
+    fn save_buffer(&mut self) {
+        let buffer = self.buffer.lock().unwrap();
+        let path = match buffer.file_path {
+            Some(ref p) => Cow::Borrowed(p),
+            None => {
+                // NOTE: this should never happen, as the file path
+                // should have been set inside the try_save_buffer method.
+                //
+                // If this runs, it probably means save_buffer has been called
+                // directly, rather than try_save_buffer.
+                //
+                // TODO: ask the user to submit a bug report on how they hit this.
+                Cow::Owned(PathBuf::from("untitled"))
+            },
+        };
+        let tmpdir = match TempDir::new_in(&Path::new("."), "iota") {
+            Ok(d) => d,
+            Err(e) => panic!("file error: {}", e)
+        };
+
+        let tmppath = tmpdir.path().join(Path::new("tmpfile"));
+        let mut file = match File::create(&tmppath) {
+            Ok(f) => f,
+            Err(e) => {
+                panic!("file error: {}", e)
+            }
+        };
+
+        //TODO (lee): Is iteration still necessary in this format?
+        for line in buffer.lines() {
+            let result = file.write_all(&*line);
+
+            if result.is_err() {
+                // TODO(greg): figure out what to do here.
+                panic!("Something went wrong while writing the file");
+            }
+        }
+
+        if let Err(e) = rename(&tmppath, &*path) {
+            panic!("file error: {}", e);
+        }
+    }
+
 
     /// Update the top_line mark if necessary to keep the cursor on the screen.
     fn maybe_move_screen(&mut self) {
