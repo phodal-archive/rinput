@@ -8,8 +8,8 @@ use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
 
 use rustbox::{Color, RustBox, Style as RustBoxStyle};
-use unicode_width::UnicodeWidthChar;
 use tempdir::TempDir;
+use unicode_width::UnicodeWidthChar;
 
 use crate::buffer::Buffer;
 use crate::buffer::Mark;
@@ -109,11 +109,11 @@ impl View {
         }
     }
 
-    #[cfg_attr(feature="clippy", allow(needless_range_loop))]
+    #[cfg_attr(feature = "clippy", allow(needless_range_loop))]
     fn draw_status(&mut self, rb: &mut RustBox) {
         let buffer = self.buffer.lock().unwrap();
         let buffer_status = buffer.status_text();
-        let mut cursor_status = buffer.get_mark_display_coords(self.cursor).unwrap_or((0,0));
+        let mut cursor_status = buffer.get_mark_display_coords(self.cursor).unwrap_or((0, 0));
         cursor_status = (cursor_status.0 + 1, cursor_status.1 + 1);
         let status_text = format!("{} ({}, {})", buffer_status, cursor_status.0, cursor_status.1).into_bytes();
         let status_text_len = status_text.len();
@@ -130,7 +130,6 @@ impl View {
                 color = Color::Red
             }
             rb.print_char(index, height, RustBoxStyle::empty(), Color::Black, color, ch);
-
         }
 
         if buffer.dirty {
@@ -173,7 +172,7 @@ impl View {
         if let Some(ch_width) = utils::char_width(ch, false, 4, 1) {
             let obj = TextObject {
                 kind: Kind::Char,
-                offset: Offset::Forward(ch_width, Mark::Cursor(0))
+                offset: Offset::Forward(ch_width, Mark::Cursor(0)),
             };
             self.move_mark(Mark::Cursor(0), obj)
         }
@@ -182,8 +181,7 @@ impl View {
     pub fn undo(&mut self) {
         {
             let mut buffer = self.buffer.lock().unwrap();
-            let point = if let Some(transaction) = buffer.undo() { transaction.end_point }
-            else { return; };
+            let point = if let Some(transaction) = buffer.undo() { transaction.end_point } else { return; };
             buffer.set_mark(self.cursor, point);
         }
         self.maybe_move_screen();
@@ -192,8 +190,7 @@ impl View {
     pub fn redo(&mut self) {
         {
             let mut buffer = self.buffer.lock().unwrap();
-            let point = if let Some(transaction) = buffer.redo() { transaction.end_point }
-            else { return; };
+            let point = if let Some(transaction) = buffer.redo() { transaction.end_point } else { return; };
             buffer.set_mark(self.cursor, point);
         }
         self.maybe_move_screen();
@@ -260,7 +257,7 @@ impl View {
                 //
                 // TODO: ask the user to submit a bug report on how they hit this.
                 Cow::Owned(PathBuf::from("untitled"))
-            },
+            }
         };
         let tmpdir = match TempDir::new_in(&Path::new("."), "iota") {
             Ok(d) => d,
@@ -296,8 +293,7 @@ impl View {
         let mut buffer = self.buffer.lock().unwrap();
         if let (Some(cursor), Some((_, top_line))) = (buffer.get_mark_display_coords(self.cursor),
                                                       buffer.get_mark_display_coords(self.top_line)) {
-
-            let width  = (self.get_width()  - self.threshold) as isize;
+            let width = (self.get_width() - self.threshold) as isize;
             let height = (self.get_height() - self.threshold) as isize;
 
             //left-right shifting
@@ -317,7 +313,7 @@ impl View {
                     let amount = (self.threshold as isize - y_offset) as usize;
                     let obj = TextObject {
                         kind: Kind::Line(Anchor::Same),
-                        offset: Offset::Backward(amount, self.top_line)
+                        offset: Offset::Backward(amount, self.top_line),
                     };
                     buffer.set_mark_to_object(self.top_line, obj);
                 }
@@ -325,11 +321,11 @@ impl View {
                     let amount = (y_offset - height + 1) as usize;
                     let obj = TextObject {
                         kind: Kind::Line(Anchor::Same),
-                        offset: Offset::Forward(amount, self.top_line)
+                        offset: Offset::Forward(amount, self.top_line),
                     };
                     buffer.set_mark_to_object(self.top_line, obj);
                 }
-                _ => { }
+                _ => {}
             }
         }
     }
