@@ -129,6 +129,13 @@ impl Buffer {
         None
     }
 
+    /// Returns the status text for this buffer.
+    pub fn status_text(&self) -> String {
+        match self.file_path {
+            Some(ref path)  =>  format!("[{}] ", path.display()),
+            None            =>  "untitled ".into(),
+        }
+    }
 
     /// Get the position of a specific character in the buffer
     ///

@@ -82,6 +82,7 @@ impl View {
     }
 
     pub fn draw(&mut self, rb: &mut RustBox) {
+        self.clear(rb);
         {
             let buffer = self.buffer.lock().unwrap();
             let height = self.get_height() - 1;
@@ -94,6 +95,58 @@ impl View {
             for y_position in 0..height {
                 let line = lines.next().unwrap_or_else(Vec::new);
                 draw_line(rb, &line, y_position, self.left_col);
+            }
+        }
+
+        self.draw_status(rb);
+
+        match self.overlay {
+            None => self.draw_cursor(rb),
+            Some(ref mut overlay) => {
+                overlay.draw(rb);
+                overlay.draw_cursor(rb);
+            }
+        }
+    }
+
+    #[cfg_attr(feature="clippy", allow(needless_range_loop))]
+    fn draw_status(&mut self, rb: &mut RustBox) {
+        let buffer = self.buffer.lock().unwrap();
+        let buffer_status = buffer.status_text();
+        let mut cursor_status = buffer.get_mark_display_coords(self.cursor).unwrap_or((0,0));
+        cursor_status = (cursor_status.0 + 1, cursor_status.1 + 1);
+        let status_text = format!("{} ({}, {})", buffer_status, cursor_status.0, cursor_status.1).into_bytes();
+        let status_text_len = status_text.len();
+        let width = self.get_width();
+        let height = self.get_height() - 1;
+
+
+        for index in 0..width {
+            let ch: char = if index < status_text_len {
+                status_text[index] as char
+            } else { ' ' };
+            rb.print_char(index, height, RustBoxStyle::empty(), Color::Black, Color::Byte(19), ch);
+
+        }
+
+        if buffer.dirty {
+            let data = ['[', '*', ']'];
+            for (idx, ch) in data.iter().enumerate() {
+                rb.print_char(status_text_len + idx + 1, height, RustBoxStyle::empty(), Color::Black, Color::Red, *ch);
+            }
+        }
+        if let Some((ref message, _time)) = self.message {
+            for (offset, ch) in message.chars().enumerate() {
+                rb.print_char(offset, height + 1, RustBoxStyle::empty(), Color::White, Color::Black, ch);
+            }
+        }
+    }
+
+    fn draw_cursor(&mut self, rb: &mut RustBox) {
+        let buffer = self.buffer.lock().unwrap();
+        if let Some(top_line) = buffer.get_mark_display_coords(self.top_line) {
+            if let Some((x, y)) = buffer.get_mark_display_coords(self.cursor) {
+                rb.set_cursor((x - self.left_col) as isize, y as isize - top_line.1 as isize);
             }
         }
     }
