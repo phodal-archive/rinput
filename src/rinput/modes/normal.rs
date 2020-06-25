@@ -1,13 +1,12 @@
-use crate::keyboard::Key;
-use crate::keymap::{KeyMap, KeyMapState, CommandInfo};
-use crate::command::{BuilderEvent, BuilderArgs };
-use crate::textobject::{ Offset, Kind, Anchor };
 use crate::buffer::Mark;
-use crate::overlay::OverlayType;
+use crate::command::{BuilderArgs, BuilderEvent};
+use crate::keyboard::Key;
+use crate::keymap::{CommandInfo, KeyMap, KeyMapState};
 use crate::modes::ModeType;
+use crate::overlay::OverlayType;
+use crate::textobject::{Anchor, Kind, Offset};
 
 use super::Mode;
-
 
 /// `NormalMode` mimics Vi's Normal mode.
 pub struct NormalMode {
