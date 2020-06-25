@@ -1,7 +1,7 @@
 use std::cmp;
 
 use unicode_width::UnicodeWidthStr;
-use rustbox::{Style, Color, RustBox};
+use crate::rustbox::rustbox::{Style, Color, RustBox};
 
 use crate::editor::ALL_COMMANDS;
 use crate::command::BuilderEvent;

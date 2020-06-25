@@ -4,9 +4,15 @@
 #![crate_type = "rlib"]
 #![warn(missing_docs)]
 
-extern crate rustbox;
 #[macro_use]
 extern crate lazy_static;
+
+#[macro_use]
+extern crate bitflags;
+
+extern crate gag;
+extern crate num_traits;
+extern crate termbox_sys as termbox;
 
 pub use editor::Editor;
 pub use input::Input;
@@ -25,3 +31,5 @@ mod overlay;
 mod textobject;
 mod log;
 mod utils;
+pub mod rustbox;
+

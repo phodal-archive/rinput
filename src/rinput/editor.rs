@@ -5,7 +5,7 @@ use std::sync::mpsc::channel;
 use std::str;
 use std::collections::HashMap;
 
-use rustbox::{RustBox, Event};
+use crate::rustbox::rustbox::{RustBox, Event};
 
 use crate::input::Input;
 use crate::keyboard::Key;

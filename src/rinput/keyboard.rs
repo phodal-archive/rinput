@@ -1,7 +1,7 @@
 use std::char;
 use std::time::Duration;
 
-use rustbox::{RustBox, Event};
+use crate::rustbox::rustbox::{RustBox, Event};
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum Key {

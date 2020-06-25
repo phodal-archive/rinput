@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
 
-use rustbox::{Color, RustBox, Style as RustBoxStyle};
+use crate::rustbox::rustbox::{Color, RustBox, Style as RustBoxStyle};
 use tempdir::TempDir;
 use unicode_width::UnicodeWidthChar;
 
