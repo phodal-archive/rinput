@@ -125,7 +125,11 @@ impl View {
             let ch: char = if index < status_text_len {
                 status_text[index] as char
             } else { ' ' };
-            rb.print_char(index, height, RustBoxStyle::empty(), Color::Black, Color::Byte(19), ch);
+            let mut color = Color::Byte(19);
+            if buffer.dirty {
+                color = Color::Red
+            }
+            rb.print_char(index, height, RustBoxStyle::empty(), Color::Black, color, ch);
 
         }
 
