@@ -365,15 +365,16 @@ impl RustBox {
     /// ```
     /// use crate::rustbox::RustBox;
     /// use std::default::Default;
+    /// use rinput::rustbox::rustbox::RustBox;
     /// let rb = RustBox::init(Default::default());
     /// ```
     ///
     /// Otherwise, you can specify:
     ///
     /// ```
-    /// use crate::rustbox::{RustBox, InitOptions};
+    /// use  rinput::rustbox::rustbox::{RustBox, InitOptions, InputMode};
     /// use std::default::Default;
-    /// let rb = RustBox::init(InitOptions { input_mode: rustbox::InputMode::Esc, ..Default::default() });
+    /// let rb = RustBox::init(InitOptions { input_mode: InputMode::Esc, ..Default::default() });
     /// ```
     pub fn init(opts: InitOptions) -> Result<RustBox, InitError> {
         let running = match running::run() {
