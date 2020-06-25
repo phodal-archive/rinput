@@ -191,6 +191,8 @@ impl Editor {
                     self.view.delete_from_mark_to_object(m, command.object.unwrap())
                 }
             }
+            Action::Operation(Operation::Undo) => { self.view.undo() }
+            Action::Operation(Operation::Redo) => { self.view.redo() }
 
             Action::Instruction(_) => {}
             _ => {}

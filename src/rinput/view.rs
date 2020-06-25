@@ -110,6 +110,26 @@ impl View {
         }
     }
 
+    pub fn undo(&mut self) {
+        {
+            let mut buffer = self.buffer.lock().unwrap();
+            let point = if let Some(transaction) = buffer.undo() { transaction.end_point }
+            else { return; };
+            buffer.set_mark(self.cursor, point);
+        }
+        self.maybe_move_screen();
+    }
+
+    pub fn redo(&mut self) {
+        {
+            let mut buffer = self.buffer.lock().unwrap();
+            let point = if let Some(transaction) = buffer.redo() { transaction.end_point }
+            else { return; };
+            buffer.set_mark(self.cursor, point);
+        }
+        self.maybe_move_screen();
+    }
+
     pub fn move_mark(&mut self, mark: Mark, object: TextObject) {
         self.buffer.lock().unwrap().set_mark_to_object(mark, object);
         self.maybe_move_screen();

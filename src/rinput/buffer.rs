@@ -8,7 +8,7 @@ use gapbuffer::GapBuffer;
 
 use crate::input::Input;
 use crate::iterators::Lines;
-use crate::log::{Change, Log};
+use crate::log::{Change, Log, LogEntry};
 use crate::textobject::{TextObject, Kind, Anchor, Offset};
 
 
@@ -543,6 +543,36 @@ impl Buffer {
             .collect::<Vec<u8>>();
         vec.reverse();
         Some(vec)
+    }
+
+    /// Redo most recently undone action.
+    pub fn redo(&mut self) -> Option<&LogEntry> {
+        if let Some(transaction) = self.log.redo() {
+            commit(transaction, &mut self.text);
+            Some(transaction)
+        } else { None }
+    }
+
+    /// Undo most recently performed action.
+    pub fn undo(&mut self) -> Option<&LogEntry> {
+        if let Some(transaction) = self.log.undo() {
+            commit(transaction, &mut self.text);
+            Some(transaction)
+        } else { None }
+    }
+}
+
+/// Performs a transaction on the passed in buffer.
+fn commit(transaction: &LogEntry, text: &mut GapBuffer<u8>) {
+    for change in &transaction.changes {
+        match *change {
+            Change::Insert(idx, ch) => {
+                text.insert(idx, ch);
+            }
+            Change::Remove(idx, _) => {
+                text.remove(idx);
+            }
+        }
     }
 }
 
