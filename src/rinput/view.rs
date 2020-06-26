@@ -89,6 +89,11 @@ impl View {
         self.width = width;
     }
 
+    /// Display the given message
+    pub fn show_message(&mut self, message: String) {
+        self.message = Some((message, SystemTime::now()));
+    }
+
     pub fn draw(&mut self, rb: &mut RustBox) {
         self.clear(rb);
         {

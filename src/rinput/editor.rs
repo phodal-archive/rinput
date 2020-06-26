@@ -152,7 +152,12 @@ impl Editor {
 
     fn handle_instruction(&mut self, command: Command) {
         match command.action {
-            Action::Instruction(Instruction::SaveBuffer) => { self.view.try_save_buffer() }
+            Action::Instruction(Instruction::SaveBuffer) => {
+                let args = BuilderArgs::new().with_str("saved".into());
+                self.command_sender.send(Command::show_message(Some(args)));
+
+                self.view.try_save_buffer()
+            }
             Action::Instruction(Instruction::ExitEditor) => {
                 self.running = false;
             }
@@ -170,7 +175,9 @@ impl Editor {
                     ModeType::Normal => { self.mode = Box::new(NormalMode::new()) }
                 }
             }
-
+            Action::Instruction(Instruction::ShowMessage(msg)) => {
+                self.view.show_message(msg)
+            }
             _ => {}
         }
     }
