@@ -200,13 +200,21 @@ impl Editor {
         }
     }
 
+    /// Handle resize events
+    ///
+    /// width and height represent the new height of the window.
+    fn handle_resize_event(&mut self, width: usize, height: usize) {
+        self.view.resize(width, height);
+    }
+
+
     pub fn start(&mut self) {
         while self.running {
             self.draw();
             self.rb.present();
 
             match self.rb.poll_event(true) {
-                Ok(Event::ResizeEvent(width, height)) => {}
+                Ok(Event::ResizeEvent(width, height)) => self.handle_resize_event(width as usize, height as usize),
                 Ok(key_event) => self.handle_key_event(key_event),
                 _ => {}
             }

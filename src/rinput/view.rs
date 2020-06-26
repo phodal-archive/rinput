@@ -81,6 +81,14 @@ impl View {
         self.width
     }
 
+    /// Resize the view
+    ///
+    /// This involves simply changing the size of the associated UIBuffer
+    pub fn resize(&mut self, width: usize, height: usize) {
+        self.height = height;
+        self.width = width;
+    }
+
     pub fn draw(&mut self, rb: &mut RustBox) {
         self.clear(rb);
         {
