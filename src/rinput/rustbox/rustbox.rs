@@ -369,16 +369,15 @@ impl RustBox {
     /// For the default options, you can use:
     ///
     /// ```
-    /// use crate::rustbox::RustBox;
+    /// use rinput::rustbox::rustbox::{RustBox};
     /// use std::default::Default;
-    /// use rinput::rustbox::rustbox::RustBox;
     /// let rb = RustBox::init(Default::default());
     /// ```
     ///
     /// Otherwise, you can specify:
     ///
     /// ```
-    /// use  rinput::rustbox::rustbox::{RustBox, InitOptions, InputMode};
+    /// use rinput::rustbox::rustbox::{RustBox, InitOptions, InputMode};
     /// use std::default::Default;
     /// let rb = RustBox::init(InitOptions { input_mode: InputMode::Esc, ..Default::default() });
     /// ```
