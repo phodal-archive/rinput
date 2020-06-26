@@ -113,6 +113,9 @@ impl Editor {
             None => return
         };
 
+        let args = BuilderArgs::new().with_str(event.to_string());
+        self.command_sender.send(Command::show_message(Some(args)));
+
         let command = match self.view.overlay {
             None => self.mode.handle_key_event(key),
             Some(ref mut overlay) => overlay.handle_key_event(key),
@@ -131,8 +134,6 @@ impl Editor {
                     panic!("Unknown command: {}", c.command_name);
                 }
             }
-
-            // let _ = self.command_sender.send(c);
         }
 
     }

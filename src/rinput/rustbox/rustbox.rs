@@ -28,6 +28,12 @@ pub enum Event {
     NoEvent,
 }
 
+impl fmt::Display for Event {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub enum InputMode {
     Current = 0x00,
