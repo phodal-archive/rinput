@@ -366,21 +366,6 @@ mod running {
 impl RustBox {
     /// Initialize rustbox.
     ///
-    /// For the default options, you can use:
-    ///
-    /// ```
-    /// use rinput::rustbox::rustbox::{RustBox};
-    /// use std::default::Default;
-    /// let rb = RustBox::init(Default::default());
-    /// ```
-    ///
-    /// Otherwise, you can specify:
-    ///
-    /// ```
-    /// use rinput::rustbox::rustbox::{RustBox, InitOptions, InputMode};
-    /// use std::default::Default;
-    /// let rb = RustBox::init(InitOptions { input_mode: InputMode::Esc, ..Default::default() });
-    /// ```
     pub fn init(opts: InitOptions) -> Result<RustBox, InitError> {
         let running = match running::run() {
             Some(r) => r,
