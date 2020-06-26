@@ -97,8 +97,6 @@ impl Key {
     pub fn from_chord(rb: &mut RustBox, start: u16) -> Option<Key> {
         let chord = Key::get_chord(rb, start);
 
-        println!("{}", chord);
-
         match chord.as_str() {
             "\x1b[1;3C" => Some(Key::AltRight),
             "\x1b[1;3D" => Some(Key::AltLeft),
