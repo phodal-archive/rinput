@@ -27,8 +27,8 @@ run-tests:
 @lint:
 	rustup component add clippy
 	rustup component add rustfmt
-	cargo clippy --lib --features "yaml unstable" -- -D warnings
-	cargo clippy --tests --examples --features "yaml unstable"
+	cargo clippy --lib -- -D warnings
+	cargo clippy --tests
 	cargo fmt -- --check
 
 clean:
